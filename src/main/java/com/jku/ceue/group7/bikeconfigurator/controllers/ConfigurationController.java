@@ -3,12 +3,19 @@ package com.jku.ceue.group7.bikeconfigurator.controllers;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,8 +34,24 @@ public class ConfigurationController {
         return builder.build();
     }
 
+    @PostMapping("/order")
+    public String order (RestTemplate restTemplate, Model model) {
+        HttpHeaders headers = new HttpHeaders();
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+        map.add("lenkertyp", this.lenkertyp_choice);
+        map.add("material", this.material_choice);
+        map.add("schaltung", this.schaltung_choice);
+        map.add("griff", this.griff_choice);
+
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+        URI res = restTemplate.postForLocation("https://www.maripavi.at/bestellung", request);
+        model.addAttribute("order_id", res.getPath());
+        return ("order_confirmed");
+    }
+
     @GetMapping("/configurator")
-    public String greeting(@RequestParam(name="lenkertyp_choice", required=false) String lenkertyp_choice, @RequestParam(name="material_choice", required=false) String material_choice, @RequestParam(name="schaltung_choice", required=false) String schaltung_choice, @RequestParam(name="griff_choice", required=false) String griff_choice, Model model, RestTemplate restTemplate) {
+    public String configure(@RequestParam(name="lenkertyp_choice", required=false) String lenkertyp_choice, @RequestParam(name="material_choice", required=false) String material_choice, @RequestParam(name="schaltung_choice", required=false) String schaltung_choice, @RequestParam(name="griff_choice", required=false) String griff_choice, Model model, RestTemplate restTemplate) {
         System.out.println(this.lenkertyp_choice + "(1)");
         String[] lenkertypen = restTemplate.getForObject(
                 "https://www.maripavi.at/produkt/lenkertyp", String[].class);
@@ -72,25 +95,34 @@ public class ConfigurationController {
         String[] verf_materialien = restTemplate.getForObject(
                 "https://www.maripavi.at/produkt/material?lenkertyp="+this.lenkertyp_choice, String[].class);
 
+        boolean found = false;
         for (String material:verf_materialien) {
             materialien.put(material, true);
+            if (this.material_choice == null || this.material_choice.equals(material)) found = true;
         }
+        if (!found)  this.material_choice = "-";
         //
         //Schaltungen-Handling
         String[] verf_schaltungen = restTemplate.getForObject(
                 "https://www.maripavi.at/produkt/schaltung?lenkertyp="+this.lenkertyp_choice, String[].class);
 
+        found = false;
         for (String schaltung:verf_schaltungen) {
             schaltungen.put(schaltung, true);
+            if (this.schaltung_choice == null || this.schaltung_choice.equals(schaltung)) found = true;
         }
+        if (!found) this.schaltung_choice = "-";
         //
         //Griff-Handling
         String[] verf_griffe = restTemplate.getForObject(
                 "https://www.maripavi.at/produkt/griff?material="+this.material_choice, String[].class);
 
+        found = false;
         for (String griff:verf_griffe) {
             griffe.put(griff, true);
+            if (this.griff_choice == null || this.griff_choice.equals(griff)) found = true;
         }
+        if (!found) this.griff_choice = "-";
         //
 
         System.out.println(this.lenkertyp_choice + "(2)");
