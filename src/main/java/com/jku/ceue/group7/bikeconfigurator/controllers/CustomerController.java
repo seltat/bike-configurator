@@ -14,10 +14,13 @@ import java.util.List;
 @Controller
 public class CustomerController {
     public static final Logger log = LoggerFactory.getLogger(CustomerController.class);
+    private Customer customer;
+
 
     @PostMapping(value = "/login")
     public String loginCustomer(@ModelAttribute Customer customer, Model model){
-        log.info(customer.getFname() +" "+ customer.getLname());
+        this.customer = customer;
+        log.info(customer.getFname() +" "+ customer.getLname() + " is created.");
         model.addAttribute("fname", customer.getFname());
         model.addAttribute("lname", customer.getLname());
         return "loginResult";
@@ -26,7 +29,6 @@ public class CustomerController {
     @GetMapping("/login")
     public String login(Model model){
         model.addAttribute("customer", new Customer());
-        log.info("entered getCall");
         return "login";
     }
 
