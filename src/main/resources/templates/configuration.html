@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Lenkerauswahl</title>
+</head>
+<body>
+<form id="lenkertypForm" action="/configurator" method="get">
+    <select th:name="lenkertyp_choice">
+        <option th:each="lenkertyp : ${lenkertypen}" th:value="${lenkertyp}" th:text="${lenkertyp}" th:selected="${lenkertyp}==*{lenkertyp_choice}"></option>
+    </select>
+    <input type="submit" value="Speichern">
+</form>
+
+<form id="materialForm" action="/configurator" method="get">
+    <select th:name="material_choice">
+        <option th:each="material : ${materialien}" th:value="${material.getKey()}" th:text="${material.getKey()}" th:disabled="!${material.getValue()}"></option>
+    </select>
+    <input type="submit" value="Speichern">
+</form>
+
+<form id="schaltungForm" action="/configurator" method="get">
+    <select th:name="schaltung_choice">
+        <option th:each="schaltung : ${schaltungen}" th:value="${schaltung.getKey()}" th:text="${schaltung.getKey()}" th:disabled="!${schaltung.getValue()}"></option>
+    </select>
+    <input type="submit" value="Speichern">
+</form>
+
+<form id="griffForm" action="/configurator" method="get">
+    <select th:name="griff_choice">
+        <option th:each="griff : ${griffe}" th:value="${griff.getKey()}" th:text="${griff.getKey()}" th:disabled="!${griff.getValue()}"></option>
+    </select>
+    <input type="submit" value="Speichern">
+</form>
+
+Deine Auswahl:
+<p th:text="${lenkertyp_choice}"/>
+<p th:text="${material_choice}"/>
+<p th:text="${schaltung_choice}"/>
+<p th:text="${griff_choice}"/>
+</body>
+</html>
