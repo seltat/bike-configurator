@@ -34,6 +34,13 @@ public class ConfigurationController {
         return builder.build();
     }
 
+    public void resetForm() {
+        this.griff_choice = null;
+        this.schaltung_choice = null;
+        this.material_choice = null;
+        this.lenkertyp_choice = null;
+    }
+
     @PostMapping("/order")
     public String order (RestTemplate restTemplate, Model model) {
         HttpHeaders headers = new HttpHeaders();
@@ -47,6 +54,7 @@ public class ConfigurationController {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
         URI res = restTemplate.postForLocation("https://www.maripavi.at/bestellung", request);
         model.addAttribute("order_id", res.getPath());
+        resetForm();
         return ("order_confirmed");
     }
 

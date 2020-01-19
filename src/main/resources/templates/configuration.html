@@ -2,36 +2,59 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Lenkerauswahl</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">    <title>Lenkerauswahl</title>
+    <style>
+        .l-box {
+        padding: 1em;
+        }
+    </style>
 </head>
 <body>
-<form id="lenkertypForm" action="/configurator" method="get">
-    <select th:name="lenkertyp_choice">
-        <option th:each="lenkertyp : ${lenkertypen}" th:value="${lenkertyp}" th:text="${lenkertyp}" th:selected="${lenkertyp}==*{lenkertyp_choice}"></option>
-    </select>
-    <input type="submit" value="Speichern">
-</form>
 
-<form id="materialForm" action="/configurator" method="get">
-    <select th:name="material_choice">
-        <option th:each="material : ${materialien}" th:value="${material.getKey()}" th:text="${material.getKey()}" th:disabled="!${material.getValue()}"></option>
-    </select>
-    <input type="submit" value="Speichern">
-</form>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-3">Schritt 1: Lenkertyp auswählen!</div>
+        <div class="col-xs-12 col-sm-6 col-md-3">Schritt 2: Material auswählen!</div>
+        <div class="col-xs-12 col-sm-6 col-md-3">Schritt 3: Schaltung auswählen!</div>
+        <div class="col-xs-12 col-sm-6 col-md-3">Schritt 4: Griff auswählen!</div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-3">
+            <form id="lenkertypForm" action="/configurator" method="get" class="pure-form pure-form-stacked">
+                <select th:name="lenkertyp_choice">
+                    <option th:each="lenkertyp : ${lenkertypen}" th:value="${lenkertyp}" th:text="${lenkertyp}" th:selected="${lenkertyp}==*{lenkertyp_choice}"></option>
+                </select>
+                <input type="submit" value="Speichern" class="pure-button pure-button-primary">
+            </form>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-3">
+            <form id="materialForm" action="/configurator" method="get" class="pure-form pure-form-stacked">
+                <select th:name="material_choice">
+                    <option th:each="material : ${materialien}" th:value="${material.getKey()}" th:text="${material.getKey()}"  th:selected="${material.getKey()}==*{material_choice}" th:disabled="!${material.getValue()}"></option>
+                </select>
+                <input type="submit" value="Speichern" class="pure-button pure-button-primary">
+            </form>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-3">
+            <form id="schaltungForm" action="/configurator" method="get" class="pure-form pure-form-stacked">
+                <select th:name="schaltung_choice">
+                    <option th:each="schaltung : ${schaltungen}" th:value="${schaltung.getKey()}" th:text="${schaltung.getKey()}"  th:selected="${schaltung.getKey()}==*{schaltung_choice}" th:disabled="!${schaltung.getValue()}"></option>
+                </select>
+                <input type="submit" value="Speichern" class="pure-button pure-button-primary">
+            </form>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-3">
+            <form id="griffForm" action="/configurator" method="get" class="pure-form pure-form-stacked">
+                <select th:name="griff_choice">
+                    <option th:each="griff : ${griffe}" th:value="${griff.getKey()}" th:text="${griff.getKey()}"  th:selected="${griff.getKey()}==*{griff_choice}" th:disabled="!${griff.getValue()}"></option>
+                </select>
+                <input type="submit" value="Speichern" class="pure-button pure-button-primary">
+            </form>
+        </div>
+    </div>
+</div>
 
-<form id="schaltungForm" action="/configurator" method="get">
-    <select th:name="schaltung_choice">
-        <option th:each="schaltung : ${schaltungen}" th:value="${schaltung.getKey()}" th:text="${schaltung.getKey()}" th:disabled="!${schaltung.getValue()}"></option>
-    </select>
-    <input type="submit" value="Speichern">
-</form>
 
-<form id="griffForm" action="/configurator" method="get">
-    <select th:name="griff_choice">
-        <option th:each="griff : ${griffe}" th:value="${griff.getKey()}" th:text="${griff.getKey()}" th:disabled="!${griff.getValue()}"></option>
-    </select>
-    <input type="submit" value="Speichern">
-</form>
 
 Deine Auswahl:
 <p th:text="${lenkertyp_choice}"/>
