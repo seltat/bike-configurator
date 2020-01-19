@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bike-Configurator</title>
+</head>
+<body>
+    <h1>Communications Engineering UE</h1>
+    <h2>Create customer</h2>
+    <form action="#" th:action="@{/login}" th:object="${customer}" method="post">
+        First name: <input type="text" th:field="*{fname}" th:required="required"> <br/>
+        Last name: <input type="text" th:field="*{lname}" th:required="required"> <br/>
+        <input type="submit" value="Submit" />
+    </form>
+</body>
+</html>
