@@ -2,15 +2,39 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">    <title>Lenkerauswahl</title>
     <title>Bike-Configurator</title>
 </head>
 <body>
-    <h1>Communications Engineering UE</h1>
-    <h2>Create customer</h2>
-    <form action="#" th:action="@{/login}" th:object="${customer}" method="post">
-        First name: <input type="text" th:field="*{fname}" th:required="required"> <br/>
-        Last name: <input type="text" th:field="*{lname}" th:required="required"> <br/>
-        <input type="submit" value="Submit" />
-    </form>
+<div th:insert="navbar :: header">...</div>
+<div class="container">
+    <div class="row">
+        <div class="col-12 d-flex justify-content-center">
+            <h1>Communications Engineering UE</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 d-flex justify-content-center">
+            <h2>Kundenkonto anlegen</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 d-flex justify-content-center">
+            <form action="#" th:action="@{/login}" th:object="${customer}" method="post">
+                <div class="form-group-row">
+                    <label for="vorname"><strong>Vorname</strong></label>
+                    <input type="text" id="vorname" th:field="*{fname}" th:required="required" class="form-control">
+                </div>
+                <div class="form-group-row">
+                    <label for="nachname"><strong>Nachname</strong></label>
+                    <input type="text" id="nachname" th:field="*{lname}" th:required="required" class="form-control">
+                </div>
+                <div class="form-group-row d-flex justify-content-center mt-2">
+                    <input type="submit" value="LOS!" class="btn btn-success">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>

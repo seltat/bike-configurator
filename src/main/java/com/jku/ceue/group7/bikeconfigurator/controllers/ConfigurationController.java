@@ -1,6 +1,6 @@
 package com.jku.ceue.group7.bikeconfigurator.controllers;
 
-import org.springframework.boot.CommandLineRunner;
+import com.jku.ceue.group7.bikeconfigurator.entities.Customer;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
@@ -9,19 +9,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpSession;
 import java.net.URI;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 @Controller
+@SessionAttributes("customer")
 public class ConfigurationController {
 
     private String lenkertyp_choice;
@@ -42,25 +39,34 @@ public class ConfigurationController {
     }
 
     @PostMapping("/order")
-    public String order (RestTemplate restTemplate, Model model) {
+    public String order (RestTemplate restTemplate, Model model, @ModelAttribute("customer") Customer customer, HttpSession session) {
         HttpHeaders headers = new HttpHeaders();
         MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
         map.add("lenkertyp", this.lenkertyp_choice);
         map.add("material", this.material_choice);
         map.add("schaltung", this.schaltung_choice);
         map.add("griff", this.griff_choice);
-
+        System.out.println("Lastname: " + customer.getLname());
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
         URI res = restTemplate.postForLocation("https://www.maripavi.at/bestellung", request);
         model.addAttribute("order_id", res.getPath());
+        model.addAttribute("lenkertyp_choice", this.lenkertyp_choice);
+        model.addAttribute("material_choice", this.material_choice);
+        model.addAttribute("schaltung_choice", this.schaltung_choice);
+        model.addAttribute("griff_choice", this.griff_choice);
         resetForm();
+        session.invalidate();
         return ("order_confirmed");
     }
 
     @GetMapping("/configurator")
-    public String configure(@RequestParam(name="lenkertyp_choice", required=false) String lenkertyp_choice, @RequestParam(name="material_choice", required=false) String material_choice, @RequestParam(name="schaltung_choice", required=false) String schaltung_choice, @RequestParam(name="griff_choice", required=false) String griff_choice, Model model, RestTemplate restTemplate) {
-        System.out.println(this.lenkertyp_choice + "(1)");
+    public String configure(@RequestParam(name="lenkertyp_choice", required=false) String lenkertyp_choice, @RequestParam(name="material_choice", required=false) String material_choice, @RequestParam(name="schaltung_choice", required=false) String schaltung_choice, @RequestParam(name="griff_choice", required=false) String griff_choice, Model model, @ModelAttribute("customer") Customer customer, RestTemplate restTemplate) {
+        if (customer == null) {
+            return "redirect:/login";
+        }
+
+
         String[] lenkertypen = restTemplate.getForObject(
                 "https://www.maripavi.at/produkt/lenkertyp", String[].class);
         String[] alleMaterialien = restTemplate.getForObject(
@@ -108,7 +114,7 @@ public class ConfigurationController {
             materialien.put(material, true);
             if (this.material_choice == null || this.material_choice.equals(material)) found = true;
         }
-        if (!found)  this.material_choice = "-";
+        if (!found)  this.material_choice = null;
         //
         //Schaltungen-Handling
         String[] verf_schaltungen = restTemplate.getForObject(
@@ -119,7 +125,7 @@ public class ConfigurationController {
             schaltungen.put(schaltung, true);
             if (this.schaltung_choice == null || this.schaltung_choice.equals(schaltung)) found = true;
         }
-        if (!found) this.schaltung_choice = "-";
+        if (!found) this.schaltung_choice = null;
         //
         //Griff-Handling
         String[] verf_griffe = restTemplate.getForObject(
@@ -130,7 +136,7 @@ public class ConfigurationController {
             griffe.put(griff, true);
             if (this.griff_choice == null || this.griff_choice.equals(griff)) found = true;
         }
-        if (!found) this.griff_choice = "-";
+        if (!found) this.griff_choice = null;
         //
 
         System.out.println(this.lenkertyp_choice + "(2)");
@@ -142,6 +148,9 @@ public class ConfigurationController {
         model.addAttribute("schaltungen", schaltungen);
         model.addAttribute("griffe", griffe);
         model.addAttribute("lenkertypen", lenkertypen);
+        model.addAttribute("fName", customer.getFname());
+        model.addAttribute("lName", customer.getLname());
+        model.addAttribute("customerId", customer.getId());
         return "configuration";
     }
 }
